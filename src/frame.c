@@ -15,8 +15,22 @@
 #include "utils.h"
 #include "constants.h"
 
+static inline int is_valid_frame_id_char(char c) {
+    if (c >= 'A' && c <= 'Z') return 1;
+    if (c >= '0' && c <= '9') return 1;
+    return 0;
+}
+
 ID3v2_frame* parse_frame(char* bytes, int offset, int version)
 {
+    // Validate that this looks like a real frame.  The spec says
+    // "The frame ID [is] made out of the characters capital A-Z and 0-9"
+    const char *f = bytes + offset;
+    if (!is_valid_frame_id_char(f[0]) || !is_valid_frame_id_char(f[1]) ||
+        !is_valid_frame_id_char(f[2]) || !is_valid_frame_id_char(f[3])) {
+        return NULL;
+    }
+
     ID3v2_frame* frame = new_frame();
     
     // Parse frame header
