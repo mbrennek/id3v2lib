@@ -122,19 +122,14 @@ ID3v2_tag* load_tag_with_buffer(const char *orig_buffer, int length)
     memcpy(tag->raw, bytes, tag_header->tag_size);
     // we use tag_size here to prevent copying too much if the user provides more bytes than needed to this function
 
-    while(offset < tag_header->tag_size)
-    {
-        frame = parse_frame(tag->raw, offset, get_tag_version(tag_header));
+    while (offset < tag_header->tag_size) {
 
-        if(frame != NULL)
-        {
-            offset += frame->size + ID3_FRAME;
-            add_to_list(tag->frames, frame);
-        }
-        else
-        {
-            break;
-        }
+        frame = parse_frame(tag->raw, offset, get_tag_version(tag_header));
+        if (frame == NULL) break;
+
+        add_to_list(tag->frames, frame);
+
+        offset += frame->size + ID3_FRAME;
     }
 
     if (buffer_copy) free(buffer_copy);
