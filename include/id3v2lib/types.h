@@ -21,6 +21,7 @@ typedef struct
     char flags;
     int tag_size;
     int extended_header_size;
+    int unsynchronised;
 } ID3v2_header;
 
 typedef struct

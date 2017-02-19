@@ -48,6 +48,7 @@ ID3v2_header* get_tag_header(const char* file_name)
     fclose(file);
     return get_tag_header_with_buffer(buffer, ID3_HEADER);
 }
+
 ID3v2_header* get_tag_header_with_buffer(char *buffer, int length)
 {
     int position = 0;
@@ -68,15 +69,16 @@ ID3v2_header* get_tag_header_with_buffer(char *buffer, int length)
     tag_header->flags = buffer[position += ID3_HEADER_REVISION];
     tag_header->tag_size = syncint_decode(btoi(buffer, ID3_HEADER_SIZE, position += ID3_HEADER_FLAGS));
 
-    if(tag_header->flags & (1 << 6))
-    {
-      // an extended header exists, so we retrieve the actual size of it and save it into the struct
-      tag_header->extended_header_size = syncint_decode(btoi(buffer, ID3_EXTENDED_HEADER_SIZE, position += ID3_HEADER_SIZE));
+    if(tag_header->flags & ID3_HEADER_FLAGS_HAS_UNSYNCHRONISATION) {
+        tag_header->unsynchronised = 1;
     }
-    else
-    {
-      // no extended header existing
-      tag_header->extended_header_size = 0;
+
+    if(tag_header->flags & ID3_HEADER_FLAGS_HAS_EXTENDED_HEADER) {
+        // an extended header exists, so we retrieve the actual size of it and save it into the struct
+        tag_header->extended_header_size = syncint_decode(btoi(buffer, ID3_EXTENDED_HEADER_SIZE, position += ID3_HEADER_SIZE));
+    } else {
+        // no extended header existing
+        tag_header->extended_header_size = 0;
     }
 
     return tag_header;
