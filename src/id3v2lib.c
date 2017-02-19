@@ -36,7 +36,7 @@ ID3v2_tag* load_tag(const char* file_name)
         perror("Error opening file");
         return NULL;
     }
-    buffer = (char*) malloc((10+header_size) * sizeof(char));
+    buffer = malloc(header_size + 10);
     if(buffer == NULL) {
         perror("Could not allocate buffer");
         fclose(file);
@@ -93,7 +93,7 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
       // an extended header exists, so we skip it too
       bytes+=tag_header->extended_header_size+4; // don't forget to skip the extended header size bytes too
     
-    tag->raw = (char*) malloc(tag->tag_header->tag_size * sizeof(char));
+    tag->raw = malloc(tag->tag_header->tag_size);
     memcpy(tag->raw, bytes, tag_header->tag_size);
     // we use tag_size here to prevent copying too much if the user provides more bytes than needed to this function
 
@@ -370,8 +370,8 @@ void set_text_frame(char* data, char encoding, char* frame_id, ID3v2_frame* fram
 
     // Set frame data
     // TODO: Make the encoding param relevant.
-    frame_data = (char*) malloc(frame->size * sizeof(char));
-    frame->data = (char*) malloc(frame->size * sizeof(char));
+    frame_data = malloc(frame->size);
+    frame->data = malloc(frame->size);
 
     sprintf(frame_data, "%c%s", encoding, data);
     memcpy(frame->data, frame_data, frame->size);
@@ -386,8 +386,8 @@ void set_comment_frame(char* data, char encoding, ID3v2_frame* frame)
     memcpy(frame->frame_id, COMMENT_FRAME_ID, 4);
     frame->size = 1 + 3 + 1 + (int) strlen(data); // encoding + language + description + comment
 
-    frame_data = (char*) malloc(frame->size * sizeof(char));
-    frame->data = (char*) malloc(frame->size * sizeof(char));
+    frame_data = malloc(frame->size);
+    frame->data = malloc(frame->size);
 
     sprintf(frame_data, "%c%s%c%s", encoding, "eng", '\x00', data);
     memcpy(frame->data, frame_data, frame->size);
@@ -403,8 +403,8 @@ void set_album_cover_frame(char* album_cover_bytes, char* mimetype, int picture_
     memcpy(frame->frame_id, ALBUM_COVER_FRAME_ID, 4);
     frame->size = 1 + (int) strlen(mimetype) + 1 + 1 + 1 + picture_size; // encoding + mimetype + 00 + type + description + picture
 
-    frame_data = (char*) malloc(frame->size * sizeof(char));
-    frame->data = (char*) malloc(frame->size * sizeof(char));
+    frame_data = malloc(frame->size);
+    frame->data = malloc(frame->size);
 
     offset = 1 + (int) strlen(mimetype) + 1 + 1 + 1;
     sprintf(frame_data, "%c%s%c%c%c", '\x00', mimetype, '\x00', FRONT_COVER, '\x00');
@@ -545,7 +545,7 @@ void tag_set_album_cover(const char* filename, ID3v2_tag* tag)
     image_size = (int) ftell(album_cover);
     fseek(album_cover, 0, SEEK_SET);
 
-    album_cover_bytes = (char*) malloc(image_size * sizeof(char));
+    album_cover_bytes = malloc(image_size);
     fread(album_cover_bytes, 1, image_size, album_cover);
 
     fclose(album_cover);

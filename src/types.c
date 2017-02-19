@@ -15,7 +15,7 @@
 
 ID3v2_tag* new_tag()
 {
-    ID3v2_tag* tag = (ID3v2_tag*) malloc(sizeof(ID3v2_tag));
+    ID3v2_tag* tag = malloc(sizeof(ID3v2_tag));
     tag->tag_header = new_header();
     tag->frames = new_frame_list();
     return tag;
@@ -23,7 +23,7 @@ ID3v2_tag* new_tag()
 
 ID3v2_header* new_header()
 {
-    ID3v2_header* tag_header = (ID3v2_header*) malloc(sizeof(ID3v2_header));
+    ID3v2_header* tag_header = malloc(sizeof(ID3v2_header));
     if(tag_header != NULL)
     {
         memset(tag_header->tag, '\0', ID3_HEADER_TAG);
@@ -38,13 +38,13 @@ ID3v2_header* new_header()
 
 ID3v2_frame* new_frame()
 {
-    ID3v2_frame* frame = (ID3v2_frame*) malloc(sizeof(ID3v2_frame));
+    ID3v2_frame* frame = malloc(sizeof(ID3v2_frame));
     return frame;
 }
 
 ID3v2_frame_list* new_frame_list()
 {
-    ID3v2_frame_list* list = (ID3v2_frame_list*) malloc(sizeof(ID3v2_frame_list));
+    ID3v2_frame_list* list = malloc(sizeof(ID3v2_frame_list));
     if(list != NULL)
     {
         list->frame = NULL;
@@ -56,8 +56,8 @@ ID3v2_frame_list* new_frame_list()
 
 ID3v2_frame_text_content* new_text_content(int size)
 {
-    ID3v2_frame_text_content* content = (ID3v2_frame_text_content*) malloc(sizeof(ID3v2_frame_text_content));
-    content->data = (char*) malloc(size * sizeof(char));
+    ID3v2_frame_text_content* content = malloc(sizeof(ID3v2_frame_text_content));
+    content->data = malloc(size);
     return content;
 }
 
@@ -71,15 +71,15 @@ void free_text_content(ID3v2_frame_text_content *content)
 
 ID3v2_frame_comment_content* new_comment_content(int size)
 {
-    ID3v2_frame_comment_content* content = (ID3v2_frame_comment_content*) malloc(sizeof(ID3v2_frame_comment_content));
+    ID3v2_frame_comment_content* content = malloc(sizeof(ID3v2_frame_comment_content));
     content->text = new_text_content(size - ID3_FRAME_SHORT_DESCRIPTION - ID3_FRAME_LANGUAGE);
-    content->language = (char*) malloc(ID3_FRAME_LANGUAGE + sizeof(char));
+    content->language = malloc(ID3_FRAME_LANGUAGE + sizeof(char));
     return content;
 }
 
 ID3v2_frame_apic_content* new_apic_content()
 {
-    ID3v2_frame_apic_content* content = (ID3v2_frame_apic_content*) malloc(sizeof(ID3v2_frame_apic_content));
+    ID3v2_frame_apic_content* content = malloc(sizeof(ID3v2_frame_apic_content));
     return content;
 }
 

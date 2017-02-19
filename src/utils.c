@@ -30,7 +30,7 @@ char* itob(int integer)
 {
     int i;
     int size = 4;
-    char* result = (char*) malloc(sizeof(char) * size);
+    char* result = malloc(size);
     
     // We need to reverse the bytes because Intel uses little endian.
     char* aux = (char*) &integer;
@@ -149,7 +149,7 @@ int has_bom(uint16_t* string)
 
 uint16_t* char_to_utf16(char* string, int size)
 {
-    uint16_t* result = (uint16_t*) malloc(size * sizeof(uint16_t));
+    uint16_t* result = malloc(size * sizeof(uint16_t));
     memcpy(result, string, size);
     return result;
 }
@@ -180,7 +180,7 @@ char* get_path_to_file(const char* file)
     char* file_name = strrchr(file, '/');
     unsigned long size = strlen(file) - strlen(file_name) + 1; // 1 = trailing '/'
     
-    char* file_path = (char*) malloc(size * sizeof(char));
+    char* file_path = malloc(size);
     strncpy(file_path, file, size);
     
     return file_path;

@@ -46,7 +46,7 @@ ID3v2_frame* parse_frame(char* bytes, int offset, int version)
     memcpy(frame->flags, bytes + (offset += ID3_FRAME_SIZE), 2);
     
     // Load frame data
-    frame->data = (char*) malloc(frame->size * sizeof(char));
+    frame->data = malloc(frame->size);
     memcpy(frame->data, bytes + (offset += ID3_FRAME_FLAGS), frame->size);
     
     return frame;
@@ -103,7 +103,7 @@ ID3v2_frame_comment_content* parse_comment_frame_content(ID3v2_frame* frame)
 
 char* parse_mime_type(char* data, int* i)
 {
-    char* mime_type = (char*) malloc(30 * sizeof(char));
+    char* mime_type = malloc(30);
     
     while(data[*i] != '\0')
     {
@@ -144,7 +144,7 @@ ID3v2_frame_apic_content* parse_apic_frame_content(ID3v2_frame* frame)
     }
   
     content->picture_size = frame->size - i;
-    content->data = (char*) malloc(content->picture_size);
+    content->data = malloc(content->picture_size);
     memcpy(content->data, frame->data + i, content->picture_size);
     
     return content;
