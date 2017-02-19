@@ -79,4 +79,8 @@ ID3v2_frame_text_content* new_text_content(int size);
 ID3v2_frame_comment_content* new_comment_content(int size);
 ID3v2_frame_apic_content* new_apic_content();
 
+// Destructors
+void free_text_content(ID3v2_frame_text_content *content);
+void free_apic_content(ID3v2_frame_apic_content *content);
+
 #endif
