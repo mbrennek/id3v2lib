@@ -26,7 +26,7 @@ ID3v2_tag* load_tag(const char* file_name)
     if(tag_header == NULL) {
         return NULL;
     }
-    header_size = tag_header->tag_size + 10;
+    header_size = tag_header->tag_size + ID3_HEADER;
     free(tag_header);
 
     // allocate buffer and fetch header
@@ -36,14 +36,14 @@ ID3v2_tag* load_tag(const char* file_name)
         perror("Error opening file");
         return NULL;
     }
-    buffer = malloc(header_size + 10);
+    buffer = malloc(header_size + ID3_HEADER);
     if(buffer == NULL) {
         perror("Could not allocate buffer");
         fclose(file);
         return NULL;
     }
     //fseek(file, 10, SEEK_SET);
-    fread(buffer, header_size+10, 1, file);
+    fread(buffer, header_size + ID3_HEADER, 1, file);
     fclose(file);
 
     //parse free and return
@@ -74,7 +74,7 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
         return NULL;
     }
 
-    if(length < tag_header->tag_size+10)
+    if(length < tag_header->tag_size + ID3_HEADER)
     {
         // Not enough bytes provided to parse completely. TODO: how to communicate to the user the lack of bytes?
         free(tag_header);
@@ -88,11 +88,12 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
     tag->tag_header = tag_header;
 
     // move the bytes pointer to the correct position
-    bytes+=10; // skip header
-    if(tag_header->extended_header_size)
-      // an extended header exists, so we skip it too
-      bytes+=tag_header->extended_header_size+4; // don't forget to skip the extended header size bytes too
-    
+    bytes += ID3_HEADER; // skip header
+    if(tag_header->extended_header_size) {
+        // an extended header exists, so we skip it too
+        bytes += tag_header->extended_header_size + ID3_EXTENDED_HEADER_SIZE; // don't forget to skip the extended header size bytes too
+    }
+
     tag->raw = malloc(tag->tag_header->tag_size);
     memcpy(tag->raw, bytes, tag_header->tag_size);
     // we use tag_size here to prevent copying too much if the user provides more bytes than needed to this function
@@ -103,7 +104,7 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
 
         if(frame != NULL)
         {
-            offset += frame->size + 10;
+            offset += frame->size + ID3_FRAME;
             add_to_list(tag->frames, frame);
         }
         else
@@ -131,7 +132,7 @@ void remove_tag(const char* file_name)
         return;
     }
 
-    fseek(file, tag_header->tag_size + 10, SEEK_SET);
+    fseek(file, tag_header->tag_size + ID3_HEADER, SEEK_SET);
     while((c = getc(file)) != EOF)
     {
         putc(c, temp_file);
@@ -176,7 +177,7 @@ int get_tag_size(ID3v2_tag* tag)
     frame_list = tag->frames->start;
     while(frame_list != NULL)
     {
-        size += frame_list->frame->size + 10;
+        size += frame_list->frame->size + ID3_FRAME;
         frame_list = frame_list->next;
     }
 
