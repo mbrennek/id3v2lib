@@ -46,7 +46,6 @@ ID3v2_tag* load_tag(const char* file_name)
     fread(buffer, header_size+10, 1, file);
     fclose(file);
 
-
     //parse free and return
     tag = load_tag_with_buffer(buffer, header_size);
     free(buffer);
@@ -54,7 +53,7 @@ ID3v2_tag* load_tag(const char* file_name)
     return tag;
 }
 
-ID3v2_tag* load_tag_with_buffer(char *bytes, int length)
+ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
 {
     // Declaration
     ID3v2_frame *frame;

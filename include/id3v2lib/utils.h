@@ -20,7 +20,7 @@
 
 #include "types.h"
 
-unsigned int btoi(char* bytes, int size, int offset);
+unsigned int btoi(const char* bytes, int size, int offset);
 char* itob(int integer);
 int syncint_encode(int value);
 int syncint_decode(int value);

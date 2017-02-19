@@ -24,7 +24,7 @@ int has_id3v2tag(ID3v2_header* tag_header)
     return 0;
 }
 
-int _has_id3v2tag(char* raw_header)
+int _has_id3v2tag(const char* raw_header)
 {
     if(memcmp(raw_header, "ID3", 3) == 0)
     {
@@ -49,7 +49,7 @@ ID3v2_header* get_tag_header(const char* file_name)
     return get_tag_header_with_buffer(buffer, ID3_HEADER);
 }
 
-ID3v2_header* get_tag_header_with_buffer(char *buffer, int length)
+ID3v2_header* get_tag_header_with_buffer(const char *buffer, int length)
 {
     int position = 0;
     ID3v2_header *tag_header;

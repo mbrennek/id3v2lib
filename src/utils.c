@@ -13,7 +13,7 @@
 
 #include "utils.h"
 
-unsigned int btoi(char* bytes, int size, int offset)
+unsigned int btoi(const char* bytes, int size, int offset)
 {
     unsigned int result = 0x00;
     int i = 0;
