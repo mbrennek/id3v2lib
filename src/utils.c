@@ -117,9 +117,10 @@ void free_tag(ID3v2_tag* tag)
     {
         if (list->frame) free(list->frame->data);
         free(list->frame);
+        ID3v2_frame_list *prev = list;
         list = list->next;
+        free(prev);
     }
-    free(list);
     free(tag);
 }
 
