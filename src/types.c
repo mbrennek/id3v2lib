@@ -23,16 +23,7 @@ ID3v2_tag* new_tag()
 
 ID3v2_header* new_header()
 {
-    ID3v2_header* tag_header = malloc(sizeof(ID3v2_header));
-    if(tag_header != NULL)
-    {
-        memset(tag_header->tag, '\0', ID3_HEADER_TAG);
-        tag_header->minor_version = 0x00;
-        tag_header->major_version = 0x00;
-        tag_header->flags = 0x00;
-        memset(tag_header->tag, 0, ID3_HEADER_SIZE);
-    }
-    
+    ID3v2_header* tag_header = calloc(1, sizeof(ID3v2_header));
     return tag_header;
 }
 
@@ -44,13 +35,7 @@ ID3v2_frame* new_frame()
 
 ID3v2_frame_list* new_frame_list()
 {
-    ID3v2_frame_list* list = malloc(sizeof(ID3v2_frame_list));
-    if(list != NULL)
-    {
-        list->frame = NULL;
-        list->next = NULL;
-        list->start = NULL;
-    }
+    ID3v2_frame_list* list = calloc(1, sizeof(ID3v2_frame_list));
     return list;
 }
 
