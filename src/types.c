@@ -88,5 +88,7 @@ void free_apic_content(ID3v2_frame_apic_content *content)
     if (!content) return;
     free(content->data);
     content->data = NULL;
+    free(content->mime_type);
+    content->mime_type = NULL;
     free(content);
 }
