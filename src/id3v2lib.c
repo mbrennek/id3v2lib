@@ -53,16 +53,31 @@ ID3v2_tag* load_tag(const char* file_name)
     return tag;
 }
 
-ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
+static void reverse_unsynchronisation(char *dest, const char *src, int length)
+{
+    while (length--) {
+        if ((*dest++ = *src++) == (char)0xFF) {
+            if (!length) return;
+            if (*src == 0x00) {
+                src++;
+                length--;
+            }
+        }
+    }
+}
+
+ID3v2_tag* load_tag_with_buffer(const char *orig_buffer, int length)
 {
     // Declaration
     ID3v2_frame *frame;
     int offset = 0;
     ID3v2_tag* tag;
     ID3v2_header* tag_header;
+    char *buffer_copy = NULL;
+    const char *bytes;
 
     // Initialization
-    tag_header = get_tag_header_with_buffer(bytes, length);
+    tag_header = get_tag_header_with_buffer(orig_buffer, length);
 
     if(tag_header == NULL) // no valid header found
       return NULL;
@@ -79,6 +94,15 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
         // Not enough bytes provided to parse completely. TODO: how to communicate to the user the lack of bytes?
         free(tag_header);
         return NULL;
+    }
+
+    if (tag_header->unsynchronised) {
+        buffer_copy = malloc(length);
+        if (!buffer_copy) return NULL;
+        reverse_unsynchronisation(buffer_copy, orig_buffer, length);
+        bytes = buffer_copy;
+    } else {
+        bytes = orig_buffer;
     }
 
     tag = new_tag();
@@ -112,6 +136,8 @@ ID3v2_tag* load_tag_with_buffer(const char *bytes, int length)
             break;
         }
     }
+
+    if (buffer_copy) free(buffer_copy);
 
     return tag;
 }
