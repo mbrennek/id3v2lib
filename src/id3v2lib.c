@@ -85,6 +85,7 @@ ID3v2_tag* load_tag_with_buffer(char *bytes, int length)
     tag = new_tag();
 
     // Associations
+    if (tag->tag_header) free(tag->tag_header);	// free() the tag_header created in new_tag()
     tag->tag_header = tag_header;
 
     // move the bytes pointer to the correct position
