@@ -14,32 +14,21 @@
 #include "header.h"
 #include "utils.h"
 
-int has_id3v2tag(ID3v2_header* tag_header)
+int has_id3v2tag(ID3v2_header *tag_header)
 {
-    if(memcmp(tag_header->tag, "ID3", 3) == 0)
-    {
-        return 1;
-    }
-
-    return 0;
+    return (memcmp(tag_header->tag, "ID3", 3) == 0);
 }
 
-int _has_id3v2tag(const char* raw_header)
+int _has_id3v2tag(const char *raw_header)
 {
-    if(memcmp(raw_header, "ID3", 3) == 0)
-    {
-        return 1;
-    }
-
-    return 0;
+    return (memcmp(raw_header, "ID3", 3) == 0);
 }
 
-ID3v2_header* get_tag_header(const char* file_name)
+ID3v2_header *get_tag_header(const char *file_name)
 {
     char buffer[ID3_HEADER];
-    FILE* file = fopen(file_name, "rb");
-    if(file == NULL)
-    {
+    FILE *file = fopen(file_name, "rb");
+    if (!file) {
         perror("Error opening file");
         return NULL;
     }
@@ -49,18 +38,14 @@ ID3v2_header* get_tag_header(const char* file_name)
     return get_tag_header_with_buffer(buffer, ID3_HEADER);
 }
 
-ID3v2_header* get_tag_header_with_buffer(const char *buffer, int length)
+ID3v2_header *get_tag_header_with_buffer(const char *buffer, int length)
 {
     int position = 0;
     ID3v2_header *tag_header;
 
-    if(length < ID3_HEADER) {
-        return NULL;
-    }
-    if( ! _has_id3v2tag(buffer))
-    {
-        return NULL;
-    }
+    if (length < ID3_HEADER) return NULL;
+    if (!_has_id3v2tag(buffer)) return NULL;
+
     tag_header = new_header();
 
     memcpy(tag_header->tag, buffer, ID3_HEADER_TAG);
@@ -69,11 +54,11 @@ ID3v2_header* get_tag_header_with_buffer(const char *buffer, int length)
     tag_header->flags = buffer[position += ID3_HEADER_REVISION];
     tag_header->tag_size = syncint_decode(btoi(buffer, ID3_HEADER_SIZE, position += ID3_HEADER_FLAGS));
 
-    if(tag_header->flags & ID3_HEADER_FLAGS_HAS_UNSYNCHRONISATION) {
+    if (tag_header->flags & ID3_HEADER_FLAGS_HAS_UNSYNCHRONISATION) {
         tag_header->unsynchronised = 1;
     }
 
-    if(tag_header->flags & ID3_HEADER_FLAGS_HAS_EXTENDED_HEADER) {
+    if (tag_header->flags & ID3_HEADER_FLAGS_HAS_EXTENDED_HEADER) {
         // an extended header exists, so we retrieve the actual size of it and save it into the struct
         tag_header->extended_header_size = syncint_decode(btoi(buffer, ID3_EXTENDED_HEADER_SIZE, position += ID3_HEADER_SIZE));
     } else {
@@ -84,18 +69,14 @@ ID3v2_header* get_tag_header_with_buffer(const char *buffer, int length)
     return tag_header;
 }
 
-int get_tag_version(ID3v2_header* tag_header)
+int get_tag_version(ID3v2_header *tag_header)
 {
-    if(tag_header->major_version == 3)
-    {
-        return ID3v23;
-    }
-    else if(tag_header->major_version == 4)
-    {
-        return ID3v24;
-    }
-    else
-    {
-        return NO_COMPATIBLE_TAG;
+    switch (tag_header->major_version) {
+        case 3:
+            return ID3v23;
+        case 4:
+            return ID3v24;
+        default:
+            return NO_COMPATIBLE_TAG;
     }
 }

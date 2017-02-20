@@ -28,24 +28,24 @@ typedef struct
 {
     int size;
     char encoding;
-    char* data;
+    char *data;
 } ID3v2_frame_text_content;
 
 typedef struct
 {
-    char* language;
-    char* short_description;
-    ID3v2_frame_text_content* text;
+    char *language;
+    char *short_description;
+    ID3v2_frame_text_content *text;
 } ID3v2_frame_comment_content;
 
 typedef struct
 {
     char encoding;
-    char* mime_type;
+    char *mime_type;
     char picture_type;
-    char* description;
+    char *description;
     int picture_size;
-    char* data;
+    char *data;
 } ID3v2_frame_apic_content;
 
 typedef struct
@@ -53,32 +53,32 @@ typedef struct
     char frame_id[ID3_FRAME_ID];
     int size;
     char flags[ID3_FRAME_FLAGS];
-    char* data;
+    char *data;
 } ID3v2_frame;
 
 typedef struct _ID3v2_frame_list
 {
-    ID3v2_frame* frame;
-    struct _ID3v2_frame_list* start;
-    struct _ID3v2_frame_list* last;
-    struct _ID3v2_frame_list* next;
+    ID3v2_frame *frame;
+    struct _ID3v2_frame_list *start;
+    struct _ID3v2_frame_list *last;
+    struct _ID3v2_frame_list *next;
 } ID3v2_frame_list;
 
 typedef struct
 {
-    char* raw;
-    ID3v2_header* tag_header;
-    ID3v2_frame_list* frames;
+    char *raw;
+    ID3v2_header *tag_header;
+    ID3v2_frame_list *frames;
 } ID3v2_tag;
 
 // Constructor functions
-ID3v2_header* new_header();
-ID3v2_tag* new_tag();
-ID3v2_frame* new_frame();
-ID3v2_frame_list* new_frame_list();
-ID3v2_frame_text_content* new_text_content(int size);
-ID3v2_frame_comment_content* new_comment_content(int size);
-ID3v2_frame_apic_content* new_apic_content();
+ID3v2_header *new_header();
+ID3v2_tag *new_tag();
+ID3v2_frame *new_frame();
+ID3v2_frame_list *new_frame_list();
+ID3v2_frame_text_content *new_text_content(int size);
+ID3v2_frame_comment_content *new_comment_content(int size);
+ID3v2_frame_apic_content *new_apic_content();
 
 // Destructors
 void free_text_content(ID3v2_frame_text_content *content);

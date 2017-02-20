@@ -20,19 +20,19 @@
 
 #include "types.h"
 
-unsigned int btoi(const char* bytes, int size, int offset);
-char* itob(int integer);
+unsigned int btoi(const char *bytes, int size, int offset);
+char *itob(int integer);
 int syncint_encode(int value);
 int syncint_decode(int value);
-void add_to_list(ID3v2_frame_list* list, ID3v2_frame* frame);
-ID3v2_frame* get_from_list(ID3v2_frame_list* list, char* frame_id);
-void free_tag(ID3v2_tag* tag);
-char* get_mime_type_from_filename(const char* filename);
+void add_to_list(ID3v2_frame_list *list, ID3v2_frame *frame);
+ID3v2_frame *get_from_list(ID3v2_frame_list *list, char *frame_id);
+void free_tag(ID3v2_tag *tag);
+char *get_mime_type_from_filename(const char *filename);
 
 // String functions
-int has_bom(uint16_t* string);
-uint16_t* char_to_utf16(char* string, int size);
-void println_utf16(uint16_t* string, int size);
-char* get_path_to_file(const char* file);
+int has_bom(uint16_t *string);
+uint16_t *char_to_utf16(char *string, int size);
+void println_utf16(uint16_t *string, int size);
+char *get_path_to_file(const char *file);
 
 #endif
