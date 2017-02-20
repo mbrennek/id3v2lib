@@ -81,47 +81,45 @@ ID3v2_frame_comment_content *parse_comment_frame_content(ID3v2_frame *frame)
     return content;
 }
 
-char *parse_mime_type(char *data, int *i)
+// Includes terminating NUL char in returned length
+static char *parse_mime_type(char *data, int *len)
 {
-    char *mime_type = malloc(30);
-
-    while (data[*i] != '\0') {
-        mime_type[*i - 1] = data[*i];
-        (*i)++;
-    }
+    char *mime_type = strdup(data);
+    *len = (int)strlen(mime_type) + 1;
 
     return mime_type;
 }
 
 ID3v2_frame_apic_content *parse_apic_frame_content(ID3v2_frame *frame)
 {
-    ID3v2_frame_apic_content *content;
-    int i = 1; // Skip ID3_FRAME_ENCODING
-
     if (!frame) return NULL;
 
-    content = new_apic_content();
+    ID3v2_frame_apic_content *content = new_apic_content();
 
-    content->encoding = frame->data[0];
+    int pos = 0;
+    content->encoding = frame->data[pos++];
 
-    content->mime_type = parse_mime_type(frame->data, &i);
-    content->picture_type = frame->data[++i];
-    content->description = &frame->data[++i];
+    int mime_type_len;	// (will include terminating NUL character)
+    content->mime_type = parse_mime_type(frame->data + pos, &mime_type_len);
+    pos += mime_type_len;
+
+    content->picture_type = frame->data[pos++];
+    content->description = &frame->data[pos];	// DO NOT free() this
 
     if (content->encoding == ID3_TEXT_ENCODING_UTF16_WITH_BOM ||
         content->encoding == ID3_TEXT_ENCODING_UTF16BE_WITHOUT_BOM) {
-            /* skip UTF-16 description */
-            while (*(uint16_t *)(frame->data + i)) i += 2;
-            i += 2;
+        /* skip UTF-16 description */
+        while (*(uint16_t *)(frame->data + pos)) pos += 2;
+        pos += 2;
     } else {
-            /* skip UTF-8 or Latin-1 description */
-            while (frame->data[i] != '\0') i++;
-            i++;
+        /* skip UTF-8 or Latin-1 description */
+        while (frame->data[pos] != '\0') pos++;
+        pos++;
     }
 
-    content->picture_size = frame->size - i;
+    content->picture_size = frame->size - pos;
     content->data = malloc(content->picture_size);
-    memcpy(content->data, frame->data + i, content->picture_size);
+    memcpy(content->data, frame->data + pos, content->picture_size);
 
     return content;
 }
