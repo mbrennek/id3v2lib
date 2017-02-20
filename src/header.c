@@ -14,12 +14,8 @@
 #include "header.h"
 #include "utils.h"
 
-int has_id3v2tag(ID3v2_header *tag_header)
-{
-    return (memcmp(tag_header->tag, "ID3", 3) == 0);
-}
 
-int _has_id3v2tag(const char *raw_header)
+static inline int has_id3v2tag(const char *raw_header)
 {
     return (memcmp(raw_header, "ID3", 3) == 0);
 }
@@ -44,7 +40,7 @@ ID3v2_header *get_tag_header_with_buffer(const char *buffer, int length)
     ID3v2_header *tag_header;
 
     if (length < ID3_HEADER) return NULL;
-    if (!_has_id3v2tag(buffer)) return NULL;
+    if (!has_id3v2tag(buffer)) return NULL;
 
     tag_header = new_header();
 
