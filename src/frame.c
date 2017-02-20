@@ -108,7 +108,8 @@ ID3v2_frame_apic_content *parse_apic_frame_content(ID3v2_frame *frame)
     content->picture_type = frame->data[++i];
     content->description = &frame->data[++i];
 
-    if (content->encoding == 0x01 || content->encoding == 0x02) {
+    if (content->encoding == ID3_TEXT_ENCODING_UTF16_WITH_BOM ||
+        content->encoding == ID3_TEXT_ENCODING_UTF16BE_WITHOUT_BOM) {
             /* skip UTF-16 description */
             while (*(uint16_t *)(frame->data + i)) i += 2;
             i += 2;
