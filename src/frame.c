@@ -51,21 +51,6 @@ ID3v2_frame *parse_frame(char *bytes, int offset, int version)
     return frame;
 }
 
-int get_frame_type(char *frame_id)
-{
-    switch(frame_id[0])
-    {
-        case 'T':
-            return TEXT_FRAME;
-        case 'C':
-            return COMMENT_FRAME;
-        case 'A':
-            return APIC_FRAME;
-        default:
-            return INVALID_FRAME;
-    }
-}
-
 ID3v2_frame_text_content *parse_text_frame_content(ID3v2_frame *frame)
 {
     ID3v2_frame_text_content *content;
