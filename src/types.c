@@ -39,10 +39,9 @@ ID3v2_frame_list *new_frame_list()
     return list;
 }
 
-ID3v2_frame_text_content *new_text_content(int size)
+ID3v2_frame_text_content *new_text_content(void)
 {
     ID3v2_frame_text_content *content = malloc(sizeof(ID3v2_frame_text_content));
-    content->data = malloc(size);
     return content;
 }
 
@@ -57,7 +56,8 @@ void free_text_content(ID3v2_frame_text_content *content)
 ID3v2_frame_comment_content *new_comment_content(int size)
 {
     ID3v2_frame_comment_content *content = malloc(sizeof(ID3v2_frame_comment_content));
-    content->text = new_text_content(size - ID3_FRAME_SHORT_DESCRIPTION - ID3_FRAME_LANGUAGE);
+    content->text = new_text_content();
+    content->text->data = calloc(1, size - ID3_FRAME_SHORT_DESCRIPTION - ID3_FRAME_LANGUAGE);
     content->language = malloc(ID3_FRAME_LANGUAGE + sizeof(char));
     return content;
 }

@@ -51,16 +51,65 @@ ID3v2_frame *parse_frame(char *bytes, int offset, int version)
     return frame;
 }
 
+static inline int bytes_per_char_for_encoding(int encoding) {
+    if (encoding == ID3_TEXT_ENCODING_UTF16_WITH_BOM ||
+        encoding == ID3_TEXT_ENCODING_UTF16BE_WITHOUT_BOM) {
+        return 2;
+    } else {
+        return 1;
+    }
+}
+
 ID3v2_frame_text_content *parse_text_frame_content(ID3v2_frame *frame)
 {
     ID3v2_frame_text_content *content;
     if (!frame) return NULL;
 
-    content = new_text_content(frame->size);
+    if (frame->size < ID3_FRAME_ENCODING + 1) return NULL;	// Need at least 1 byte for encoding
+
+    content = new_text_content();
 
     content->encoding = frame->data[0];
     content->size = frame->size - ID3_FRAME_ENCODING;
-    memcpy(content->data, frame->data + ID3_FRAME_ENCODING, content->size);
+
+    // Before we load the frame data, make sure we have 2 x '\0' terminators (this is so that
+    // library clients can assume ID3v2.4-type lists for all text fields - i.e. that there is
+    // a terminating NUL character on every string in a text field, with a second NUL character
+    // at the end of the (possible) list of text fields).
+
+    char *text = frame->data + ID3_FRAME_ENCODING;
+    int text_size = content->size;		// Number of bytes to copy from the frame
+
+    int bytes_per_char = bytes_per_char_for_encoding(content->encoding);
+    int penultimate_char = 1;
+    if (text_size >= 2 * bytes_per_char + 1) {	// We have at least 2 chars, so safe to look at penultimate one
+        if (bytes_per_char == 2) {
+            uint16_t *wp = (uint16_t *)text;	// XXX won't work on strict alignment machines
+            int ws = text_size / 2;
+            penultimate_char = wp[ws - 2];
+        } else {
+            penultimate_char = text[text_size - 2];
+        }
+    }
+
+    if (penultimate_char) content->size += bytes_per_char;	// We'll need at least one more terminating NUL char
+
+    int last_char = 1;
+    if (text_size >= 1 * bytes_per_char + 1) {	// We have at least 1 char, so safe to look at it
+        if (bytes_per_char == 2) {
+            uint16_t *wp = (uint16_t *)text;	// XXX won't work on strict alignment machines
+            int ws = text_size / 2;
+            last_char = wp[ws - 1];
+        } else {
+            last_char = text[text_size - 1];
+        }
+    }
+
+    if (last_char) content->size += bytes_per_char;		// We'll need another terminating NUL char
+
+    content->data = calloc(1, content->size);
+
+    memcpy(content->data, text, text_size);
 
     return content;
 }
@@ -106,8 +155,7 @@ ID3v2_frame_apic_content *parse_apic_frame_content(ID3v2_frame *frame)
     content->picture_type = frame->data[pos++];
     content->description = &frame->data[pos];	// DO NOT free() this
 
-    if (content->encoding == ID3_TEXT_ENCODING_UTF16_WITH_BOM ||
-        content->encoding == ID3_TEXT_ENCODING_UTF16BE_WITHOUT_BOM) {
+    if (bytes_per_char_for_encoding(content->encoding) == 2) {
         /* skip UTF-16 description */
         while (*(uint16_t *)(frame->data + pos)) pos += 2;
         pos += 2;
