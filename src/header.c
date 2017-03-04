@@ -45,7 +45,11 @@ ID3v2_header *get_tag_header_with_buffer(const char *buffer, int length)
     tag_header = new_header();
 
     memcpy(tag_header->tag, buffer, ID3_HEADER_TAG);
-    tag_header->major_version = buffer[position += ID3_HEADER_TAG];
+    tag_header->orig_major_version = buffer[position += ID3_HEADER_TAG];
+    tag_header->major_version = buffer[position];
+    if (get_tag_orig_version(tag_header) == ID3v22) {
+        tag_header->major_version = 3;
+    }
     tag_header->minor_version = buffer[position += ID3_HEADER_VERSION];
     tag_header->flags = buffer[position += ID3_HEADER_REVISION];
     tag_header->tag_size = syncint_decode(btoi(buffer, ID3_HEADER_SIZE, position += ID3_HEADER_FLAGS));
@@ -68,6 +72,20 @@ ID3v2_header *get_tag_header_with_buffer(const char *buffer, int length)
 int get_tag_version(ID3v2_header *tag_header)
 {
     switch (tag_header->major_version) {
+        case 3:
+            return ID3v23;
+        case 4:
+            return ID3v24;
+        default:
+            return NO_COMPATIBLE_TAG;
+    }
+}
+
+int get_tag_orig_version(ID3v2_header *tag_header)
+{
+    switch (tag_header->orig_major_version) {
+        case 2:
+            return ID3v22;
         case 3:
             return ID3v23;
         case 4:

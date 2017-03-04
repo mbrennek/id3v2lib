@@ -17,6 +17,7 @@
 ID3v2_header *get_tag_header(const char *file_name);
 ID3v2_header *get_tag_header_with_buffer(const char *buffer, int length);
 int get_tag_version(ID3v2_header *tag_header);
+int get_tag_orig_version(ID3v2_header *tag_header);
 void edit_tag_size(ID3v2_tag *tag);
 
 #endif

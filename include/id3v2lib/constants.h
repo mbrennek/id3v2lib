@@ -26,16 +26,20 @@
 #define ID3_HEADER_FLAGS_EXPERIMENTAL          (1 << 5)
 
 #define NO_COMPATIBLE_TAG 0
-#define ID3v23  1
-#define ID3v24  2
+#define ID3v22  1
+#define ID3v23  2
+#define ID3v24  3
 // END TAG_HEADER CONSTANTS
 
 /**
  * TAG_FRAME CONSTANTS
  */
 #define ID3_FRAME 10
+#define ID3_FRAME_v22 6
 #define ID3_FRAME_ID 4
+#define ID3_FRAME_ID_v22 3
 #define ID3_FRAME_SIZE 4
+#define ID3_FRAME_SIZE_v22 3
 #define ID3_FRAME_FLAGS 2
 #define ID3_FRAME_ENCODING 1
 #define ID3_FRAME_LANGUAGE 3

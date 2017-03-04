@@ -81,7 +81,7 @@ ID3v2_tag *load_tag_with_buffer(const char *orig_buffer, int length)
 
     if (!tag_header) return NULL;	// no valid header found
 
-    if (get_tag_version(tag_header) == NO_COMPATIBLE_TAG) {
+    if (get_tag_orig_version(tag_header) == NO_COMPATIBLE_TAG) {
         // no supported id3 tag found
         free(tag_header);
         return NULL;
@@ -119,14 +119,17 @@ ID3v2_tag *load_tag_with_buffer(const char *orig_buffer, int length)
     memcpy(tag->raw, bytes, tag_header->tag_size);
     // we use tag_size here to prevent copying too much if the user provides more bytes than needed to this function
 
+    int version = get_tag_orig_version(tag_header);
+    int frameHeaderSize = (version == ID3v22) ? ID3_FRAME_v22 : ID3_FRAME;
+
     while (offset < tag_header->tag_size) {
 
-        frame = parse_frame(tag->raw, offset, get_tag_version(tag_header));
+        frame = parse_frame(tag->raw, offset, version);
         if (frame == NULL) break;
 
         add_to_list(tag->frames, frame);
 
-        offset += frame->size + ID3_FRAME;
+        offset += frame->size + frameHeaderSize;
     }
 
     if (buffer_copy) free(buffer_copy);

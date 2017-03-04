@@ -17,6 +17,7 @@ typedef struct
 {
     char tag[ID3_HEADER_TAG];
     char major_version;
+    char orig_major_version;
     char minor_version;
     char flags;
     int tag_size;
@@ -52,6 +53,7 @@ typedef struct
 {
     char frame_id[ID3_FRAME_ID];
     int size;
+    int version;
     char flags[ID3_FRAME_FLAGS];
     char *data;
 } ID3v2_frame;
